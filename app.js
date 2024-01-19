@@ -9,13 +9,13 @@ import fetch from 'node-fetch';
 async function busInfo(id) {
     const response = await fetch(`https://api.tfl.gov.uk/StopPoint/${id}/Arrivals`, {
         method: 'GET'});
-
-
     
     const data = await response.json();
+    console.log(response.status);
     const sortedData = data.sort((a,b) => {
         return a.timeToStation - b.timeToStation;
     })
+    console.log(sortedData.length);
 
     if (sortedData.length >= 5) {
         for (let i = 0; i < 5; i++) {
@@ -53,8 +53,9 @@ async function getBusStop (postcode) {
 
         const result = new Array(2);
         result[0] = stops.stopPoints[0].naptanId;
+
         result[1] = stops.stopPoints[1].naptanId;
-        // console.log(result);
+
 
         return result;
 
@@ -63,18 +64,19 @@ async function getBusStop (postcode) {
     }
 }
 
-// getBusStop('NW3 5RL');
+// getBusStop('NW35RL');
 
 async function postalBus (postcode) {
 
     try {
         const stopIds = await getBusStop(postcode);
 
-        if (stopIds && stopIds >= 2) {
+        if (stopIds && stopIds.length >= 2) {
             console.log(`The info about the nearst bus station: `);
             await busInfo(stopIds[0]);
         
             console.log(`The info about the second nearst bus station: `);
+            console.log(stopIds[1]);
             await busInfo(stopIds[1]);
         } else {
             console.log('Unable to find nearest bus stops.');
@@ -85,4 +87,4 @@ async function postalBus (postcode) {
 
 }
 
-postalBus('NW3 5RL');
+postalBus('SW1V 3AT');
